@@ -1,0 +1,87 @@
+直接实现servlet接口
+
+生命周期：   与服务器是不求同生但求同死
+
+init()---------单例模式
+service（）
+destroy()
+
+
+创建一个Servlet
+实现servlet接口：实现servlet接口中所有的未实现的方法
+继承GenericServlet：手动实现service方法
+继承HttpServlet：重写doGet()和doPost
+
+HttpServlet中：实现了service方法，重写service方法，根据请求不同，
+分成了doGet()/doPost（）
+
+
+
+三、设置servlet的初始化时机
+
+
+
+Servlet的生命周期：与服务器同生共死
+
+当数值越大，初始化时机越晚
+
+四、资源路径的各种形式
+全匹配
+/aaaa/bbbb/demo
+注意：最前面的/不能省略掉的
+
+通配符匹配
+/aaa/*
+注意：最前面的/不能省略掉的
+
+后缀匹配
+*.do   *.html   *.action
+注意：最前面不能添加/
+五、访问路径
+http://localhost:8081/-------------进入容器内部
+
+
+http://localhost:8081/day131/login.html
+http://localhost:8081/day131/demo02
+
+相对路径： 从login.html中发送请求到demo02  可以使用相对路径   ./demo02
+
+http://localhost:8081/day131/login.html
+http://localhost:8081/day131/servlet/demo02
+相对路径： 从login.html中发送请求到demo02  可以使用相对路径   ./servlet/demo02
+
+
+绝对路径：
+方式一：
+http://localhost:8081/day131/demo02
+方式二：
+/day131/demo02
+
+六、ServletConfig对象
+用于获取配置信息
+ServletConfig servletconfig = getServletConfig();
+servletconfig .getInitParameter(“name”);
+Servletconfig.getInitParameterNames()
+
+
+
+七、ServletContext域对象
+ServletContext：生命周期-------与服务器同生共死
+ServletContext：作用范围-------整个项目
+获取ServletContext对象
+方法一：
+servletConfig.getServletContext()
+方法二：
+servletContext servletContext2 = getServletContext();
+
+
+ServletContext方法：-----------------------------有下列三个方法的对象即为域对象  
+getAttribute(“name”)----获取
+setAttribute(“name”,”value”)---设置
+removeAttribute(“name”)---移除
+
+
+获取文件的真实路径
+String realPath = getServletContext().getRealPath("/upload_img");
+
+System.out.println(realPath);    //D:\apache-tomcat-9.0.14\webapps\day131\upload_img
