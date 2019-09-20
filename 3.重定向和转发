@@ -1,0 +1,217 @@
+1、HttpServletResponse
+响应信息的设置
+
+如何解决响应乱码
+如何进行重定向
+如何进行文件下载
+2、HttpServleRequest
+获取请求行，请求头，请求体中的内容
+
+获取表单提交的所有参数
+如何解决post请求参数乱码的问题
+如何进行转发（重定向VS请求转发）
+BeanUtils工具的使用
+
+一、响应行
+响应（get/post）
+
+响应行
+
+
+正常情况下状态码的设置
+
+异常情况下状态码的设置
+
+响应行的设置eg:
+//		response.setStatus(304);
+//		response.sendError(404);
+//		response.sendError(400, "请看清楚你的路径");
+		response.sendError(500, "正在升级中，请稍等");
+
+响应头
+
+设置响应头中的key-value
+当有多个相同的key设置时，只会保存最后一对
+
+设置响应头中的key-value
+当有多个相同的key设置时，不会覆盖前面的
+
+响应头的设置eg:
+	/*response.setHeader("location", "/day18");
+		response.setHeader("location", "/day181920");*/
+		response.addHeader("location", "/day18");
+		response.addHeader("location", "/day181920");
+
+响应体
+字符流的响应
+Response.getWriter().println()
+
+字节流的响应
+Response.getOutPutStream().write(“字节流”)
+
+注意：
+1、使用字节流可以传输文件、图片常用的文档内容传输既使用字符流
+2、可用同时使用多个字节流或者字符流的代码
+3、不能字节流和字符流同时使用
+
+
+当响应中文时，会出现乱码问题
+		//解决中文乱码问题
+		//告诉服务器，要以UTF-8的形式向浏览器传输响应内容
+//		response.setCharacterEncoding("utf-8");
+		//告诉浏览器，以utf-8的形式进行解析
+//		response.setHeader("Content-Type", "text/html;charset=utf-8");
+
+		
+		//告诉服务器，要以UTF-8的形式向浏览器传输响应内容,告诉浏览器，以utf-8的形式进行解析
+		response.setContentType("text/html;charset=utf-8");
+
+//解决中文乱码设置之后，在进行相应
+	response.getWriter().print("北京你好");
+
+重定向
+
+
+		//需要重定向
+//		response.setStatus(302);
+		//重定向地址
+//		response.setHeader("location", "/day14/ServletDemo05");		
+		//重定向合成了一个步骤
+		response.sendRedirect("/day14/ServletDemo05");
+
+总结：
+1、重定向地址栏地址会发生改变，显式最后一次重定向访问的地址
+2、重定向是多次请求多次响应
+3、重定向页面显式的内容为最后一次响应的内容
+
+文件的下载
+1、获取到要下载的文件的名称
+2、获取到下载文件的类型
+3、告诉浏览器要下载文件的类型
+4、告诉浏览器是需要下载，不是解析文件
+5、获取到要下载文件的真实路径
+6、使用输入输出流，完成文件的下载---关闭
+
+// 1 获取下载文件的名称
+		String fileName = request.getParameter("file");
+		
+		//2获取到下载文件的类型
+		String mimeType = getServletContext().getMimeType(fileName);
+		
+		//3告诉浏览器要下载文件的类型
+		response.setHeader("Content-Type", mimeType);
+		
+		//4告诉浏览器是需要下载，不是解析
+		 	//4.1 先使用utf-8对文件名称进行编码
+		fileName= URLEncoder.encode(fileName, "utf-8");
+			//4.2告诉浏览器是需要下载，不是解析文件
+		response.setHeader("Content-Disposition","attachment;filename="+fileName);
+			//4.3再使用utf-8对文件名称进行解码
+		fileName = URLDecoder.decode(fileName, "utf-8");//解码		
+				
+				
+		//5获取到要下载文件的真实路径
+		String realPath = getServletContext().getRealPath("/download/"+fileName);
+		
+		//6使用输入输出流，完成文件的下载-----关闭流
+		FileInputStream is = new FileInputStream(realPath);
+		ServletOutputStream os = response.getOutputStream();
+		IOUtils.copy(is, os);
+		is.close();
+
+
+
+二、HttpServletRequest
+
+请求行
+//获取请求行参数
+		//获取请求方式
+		String method = request.getMethod();
+		System.out.println("method:"+method);//method:GET
+		//获取请求资源的路径
+		String requestURI = request.getRequestURI();
+		System.out.println("requestURI:"+requestURI);//requestURI:/day14/servletDemo01
+		//获取比较全的路径
+		StringBuffer requestURL = request.getRequestURL();
+		System.out.println("requestURL:"+requestURL);//requestURL:http://localhost:8081/day14/servletDemo01
+		//获取到项目路径
+		String contextPath = request.getContextPath();
+		System.out.println("contextPath:"+contextPath);//contextPath:/day14
+		//服务器的IP地址
+		String localAddr = request.getLocalAddr();
+		System.out.println("localAddr:"+localAddr);
+
+请求头
+
+String header = request.getHeader("User-Agent");
+System.out.println(header);
+
+
+请求体
+getParameter(参数) 
+getParameterValues(参数)
+getParameterMap() 
+
+    //根据参数名获取参数值----唯一
+    //String hobby = request.getParameter("hobby");
+    //根据参数名，获取多个参数值--数组
+    //Strinf[] values = request.getParameter("hobby");
+    //String valStr = Array.toString(values);
+    //String str = valStr.substring(1,valStr.length()-1);
+    //System.out.println(str);
+    
+    //一起获取所有的请求参数
+    //Map<String ,String[]> maps = request.getParaeterMap();
+    for(String key:maps.keySet()){
+      String[] values = maps.get(key);
+      System.out.println(Arrays.toString(values));
+    }
+
+
+
+
+使用BeanUtils工具
+1、导入jar包
+2、BeanUtils核心
+
+
+
+Map<String,Stirng[]> maps = request.getParameterMap();
+User user = new User();
+//BeanUtils工具
+try{
+  BeanUtils.populate(user,maps);
+  String[] hobby = maps.get("hobby");
+  String valStr = Arrays.toString(hobbys);
+  String str = valStr.subString(1,length()-1);
+  user.setHobby(str);
+  System.out.println(user);
+}catch(Exception e){  
+  e.printStackTrace();
+}
+
+
+
+
+
+Request域对象
+getXXX()  setXXX()   removeXXX()---------说明是域对象
+
+生命周期：从请求开始到响应结束-----一次完整的请求
+
+
+请求转发
+
+request.setAttribute("username","Tom");
+response.getWriter().print("ServletDemo04");
+requset.getRequestDispatcher("./serletDemo05").forward(request,reponse);
+注意：请求转发使用的是相对路径重定向使用的是绝对路径
+
+总结：
+1、浏览器地址栏没有发生改变
+2、一次请求一次响应，跳转是在服务器内部进行的
+3、浏览器页面显式的是 转发的最后的路径给出的响应
+
+
+
+重定向和转发都可以进行页面的跳转：当需要使用request域对象传递参数时，使用请求转发，否则使用重定向
