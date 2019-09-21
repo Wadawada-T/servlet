@@ -1,0 +1,94 @@
+1.cookie 是存储在浏览器端的
+2.session 是存储在服务器端的
+
+cookie的介绍：
+  1.如何创建一个cookie
+    cookie c = new cookie("name","value");
+    c.getName()----获取当前cookie对象中的name值
+    c.getValue()----获取当前cookie对象中的value值
+  2.如何将cookie传输到浏览器端保存
+    response.addCookie(c)
+  3.再次发送请求时，所有的cookie自动带回到服务器-----无需自己实现
+  4.服务器端如何获取到所有的cookie
+      Cookie[] cookies = requeset.getCookies();
+ 需求：
+  拿之前登录案例进行cookie测试
+  登录成功之后，往cookie中存储当前登录的时间，并且显示上一次登录的时间
+  当该次登录为第一次时，显示  欢迎进入0715班国家实验软件开发组织
+  
+  
+ 代码
+    //解决响应乱码问题
+    response.setContentType("text/html;charset=utf-8);
+    //1.获取到所有放入cookie对象集合
+    Cookie[] cookies = requset.getCookies();
+    //2.检查所有的集合中是否含有lastTime对应的cookie-------cookie（“lastTime”，“12345667”）
+    Cookie c = CookieUtils.checkCookie(cookie,"lastTime");
+    if(c!=null){
+      //3.如果有显式lastTime 对应的时间
+      String time = c.getValue();
+      long timeLong = Long.pareLong(time);
+      Date date = new Date(timeLong);
+      SimpleDateFormat saf = new simpleDateFormat("yy-MM-dd HH:mm:ss");
+      String lastTime = saf.format(date);
+      response.getWriter().print("<h1>上次访问的时间是：</h1>");
+    }else{
+       //4.如果没有显示欢迎字样，欢迎进入0715班国家级试验软件开发组织
+       response.getWriter().print("<h1>欢迎进入0715班国家级试验软件开发组织</h1>");
+    }
+    //5.存入当前登录时间，设置存活时间和路径
+    long newTime = System.currentTimeMillis();
+    Cookie cookie = new Cookie("lastTime",newTime+"");
+    response.addCookie(cookie);
+    
+    
+    
+设置cookie的存活时间：eg:设置存活一周  cookie.setMaxAge(7*24*60*60)
+设置cookie的存活范围： setPath(request.getContextPath)   
+    
+    
+    
+    
+二、Session
+HttpSession  第一个session
+
+存在服务器端，基于cookie的会话技术    
+
+Session是一个域对象：getXXX(“”)  setXXX(“”,””)  removeXXX(“”)
+
+Session:
+生命周期  
+
+在servlet中创建、获取session对象：  request.getSession()
+
+创建：第一次调用request.getSession()代表创建session
+获取：第n(n>1)次调用request.getSession()代表获取session
+
+销毁   1、session默认存活时间是30分钟
+      2、Invalidate()方法被调用时，当前的session对象消亡
+      3、setMaxInactiveInterval()方法  设置session的存活周期
+      4、当服务器非正常关闭时，session消亡
+
+
+Servlet中三大域对象作用范围：servletContext/session/request
+
+
+ServletContext:  整个项目---------与服务器同生共死
+Session:一次完整的会话所经过的所有servlet、jsp
+Request:一次完整的请求所经过所有servlet、jsp
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  
