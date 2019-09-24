@@ -1,0 +1,126 @@
+在服务器端有三大组件：  servlet  listener  filter
+
+
+listener:是一种Java类，实现相应的接口，用于监听域对象的创建、销毁、添加、删除、修改
+
+分成三大类学习
+1.域对象的创建和销毁---------------------3个
+2.域对象中值的变化（存储、替换、移除值） --3个
+3.对象在session中的变化（对象被绑定在session，移除session、钝化、活化）--2个
+
+第一类：
+域对象的创建和销毁
+1.servletContextListener
+        contextDestroyed()
+        contextInitialized()
+   步骤：1.创建一个测试类，实现servletContextListener接口
+         2.在配置文件中配置该监听器
+
+
+
+2.HttpSessionListener
+          sessionCreated()
+          sessionDestroyed()
+
+    步骤：1、创建一个测试类，实现HttpSessionListener接口
+      2、在配置文件中配置该监听器
+      
+
+
+3、ServletRequestListener
+      requestDestroyed()
+      requestInitialized()
+
+    步骤：1、创建一个测试类，实现ServletRequestListener接口
+          2、在配置文件中配置该监听器   
+          
+          
+          
+第二类域对象中值的变化
+
+1.ServletContextAttributeListener
+    attributeAdded()
+    attributeRemoved()
+    attributeReplaced()
+
+    步骤：1、创建一个测试类，实现ServletContextAttributeListener接口
+          2、在配置文件中配置该监听器
+
+2.HttpSessionAttributeListener
+               attributeAdded()
+               attributeRemoved()
+               attributeReplaced()
+          步骤：1、创建一个测试类，实现HttpSessionAttributeListener接口
+          2、在配置文件中配置该监听器
+
+3.ServletRequestAttributeListener
+    attributeAdded()
+    attributeRemoved()
+    attributeReplaced()
+
+    步骤：1、创建一个测试类，实现ServletRequestAttributeListener接口
+          2、在配置文件中配置该监听器
+
+
+
+
+
+第三类：监听session中的对象-----不需要在web.xml文件中进行配置
+
+
+1、HttpSessionBindingListener
+    valueBound()
+    valueUnbound()
+
+
+
+
+2、HttpSessionActivationListener
+什么是钝化：存到本地的磁盘中---序列化
+什么是活化：将磁盘中的信息活化内存中运行
+  sessionDidActivate()
+  sessionWillPassivate()
+
+
+注意：被监听的对象需要序列化（实现Serializable接口）
+
+
+
+
+
+
+
+二、过滤Filter
+  一个Java类，实现了filter接口，需要在web.xml中进行配置，可以考虑拦截请求
+  1.创建一个测试类，需要实现filter接口
+  2.在web.xml配置响应的过滤器，过滤的路径
+
+
+配置文件内容
+<filter-mapping>
+  <dispathcher>FORWAED</dispathcher>------------过滤转发路径满足/*的，所有请求转发
+  <dispathcher>REQUEST</dispathcher>------------过滤路径满足/*的，所有请求
+</filter-mapping>
+
+
+
+
+三、日志
+  1.导入log4j的jar包
+  2.src放入日志的配置文件
+  
+  
+  public class logDemo{
+      public static void main(String[] args){
+          Logger logger = Logger.getLogger(LogDemo.class);
+          logger.debug("debug----------");
+          logger.info("info----------");
+          logger.warning("warning----------");
+          logger.error("error----------");
+          logger.fatal("fatal----------");  
+      }
+  }
+
+
+
+
